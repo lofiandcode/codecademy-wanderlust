@@ -1,5 +1,7 @@
+require('dotenv').config();
+
 // Foursquare API Info
-const foursquareKey = '';
+const foursquareKey = process.env.FOURSQUARE_API_KEY;
 const url = '';
 
 // OpenWeather Info
