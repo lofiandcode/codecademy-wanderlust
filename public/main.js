@@ -2,11 +2,11 @@ require('dotenv').config();
 
 // Foursquare API Info
 const foursquareKey = process.env.FOURSQUARE_API_KEY;
-const url = '';
+const url = 'https://api.foursquare.com/v3/places/search';
 
 // OpenWeather Info
-const openWeatherKey = '';
-const weatherUrl = '';
+const openWeatherKey = process.env.OPEN_WEATHER_API_KEY;
+const weatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Page Elements
 const $input = $('#city');
@@ -21,12 +21,26 @@ const options = {
   method: 'GET',
   headers: {
     Accept: 'application/json',
+    Authorization: foursquareKey
   }
 };
 
 // Add AJAX functions here:
-const getPlaces = () => {
-  
+const getPlaces = async () => {
+  const city = $input.val();
+  const urlToFetch = `${url}?near=${city}&limit=10`;
+
+  try {
+    const response = await fetch(urlToFetch, options);
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      const places = jsonResponse.results;
+      return places;
+    }
+    throw new Error('Request failed!');
+  } catch (error) {
+    console.log(error);
+  };
 };
 
 const getForecast = () => {
