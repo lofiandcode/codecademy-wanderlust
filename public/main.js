@@ -43,8 +43,18 @@ const getPlaces = async () => {
   };
 };
 
-const getForecast = () => {
-  
+const getForecast = async () => {
+  const urlToFetch = `${weatherUrl}?q=${$input.val()}&APPID=${openWeatherKey}`;
+
+  try {
+    const response = await fetch(urlToFetch);
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      return jsonResponse;
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 
@@ -52,15 +62,17 @@ const getForecast = () => {
 const renderPlaces = (places) => {
   $placeDivs.forEach(($place, index) => {
     // Add your code here:
-
-    const placeContent = '';
+    const place = places[index];
+    const placeIcon = place.categories[0].icon;
+    const placeImgSrc =`${placeIcon.prefix}bg_64${placeIcon.suffix}`;
+    const placeContent = createPlaceHTML(place.name, place.location, placeImgSrc);;
     $place.append(placeContent);
   });
   $destination.append(`<h2>${places[0].location.locality}</h2>`);
 };
 
 const renderForecast = (forecast) => {
-  const weatherContent = '';
+  const weatherContent = createWeatherHTML(forecast);
   $weatherDiv.append(weatherContent);
 };
 
@@ -69,8 +81,8 @@ const executeSearch = () => {
   $weatherDiv.empty();
   $destination.empty();
   $container.css("visibility", "visible");
-  getPlaces();
-  getForecast();
+  getPlaces().then(places => renderPlaces(places));
+  getForecast().then(forecast => renderForecast(forecast));
   return false;
 }
 
